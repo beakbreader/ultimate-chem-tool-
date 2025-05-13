@@ -13,17 +13,28 @@ const atomicWeights = {
   Tl: 204.38, Pb: 207.2, Bi: 208.98, Th: 232.04, U: 238.03
 };
 
-function normalizeFormula(formula) {
+const elementNames = {
+  hydrogen: "H", helium: "He", lithium: "Li", beryllium: "Be", boron: "B", carbon: "C",
+  nitrogen: "N", oxygen: "O", fluorine: "F", neon: "Ne", sodium: "Na", magnesium: "Mg",
+  aluminum: "Al", silicon: "Si", phosphorus: "P", sulfur: "S", chlorine: "Cl", argon: "Ar",
+  potassium: "K", calcium: "Ca", iron: "Fe", zinc: "Zn", copper: "Cu", silver: "Ag",
+  gold: "Au", tin: "Sn", lead: "Pb", mercury: "Hg", iodine: "I"
+};
+
+function normalizeFormula(input) {
+  const clean = input.trim().toLowerCase();
+  if (elementNames[clean]) return elementNames[clean];
+
   let result = '', i = 0;
-  while (i < formula.length) {
-    if (/[a-zA-Z]/.test(formula[i])) {
-      let el = formula[i++].toUpperCase();
-      if (i < formula.length && /[a-z]/.test(formula[i])) {
-        el += formula[i++].toLowerCase();
+  while (i < clean.length) {
+    if (/[a-z]/i.test(clean[i])) {
+      let element = clean[i++].toUpperCase();
+      if (i < clean.length && /[a-z]/.test(clean[i])) {
+        element += clean[i++].toLowerCase();
       }
-      result += el;
+      result += element;
     } else {
-      result += formula[i++];
+      result += clean[i++];
     }
   }
   return result;
@@ -78,7 +89,7 @@ function runCalculation() {
   const results = document.getElementById('results');
 
   if (!formula) {
-    results.textContent = '⚠️ Please enter a chemical formula.';
+    results.textContent = '⚠️ Please enter a chemical formula or element name.';
     formulaEl.classList.add('error');
     return;
   }
