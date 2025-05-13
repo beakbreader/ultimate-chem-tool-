@@ -4,19 +4,19 @@
 
 body {
   font-family: 'Segoe UI', sans-serif;
+  background: #f4f7fa;
   margin: 0;
   padding: 0;
-  background: #f7f9fc;
   color: #222;
 }
 
 .app-container {
-  max-width: 600px;
+  max-width: 640px;
   margin: 40px auto;
-  padding: 20px;
+  padding: 25px;
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
 }
 
 header h1 {
@@ -27,7 +27,13 @@ header h1 {
 
 header p {
   font-size: 1em;
-  color: #666;
+  color: #555;
+}
+
+code {
+  background: #eef2f8;
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
 .form-area {
@@ -48,6 +54,10 @@ input, select {
   border: 1px solid #ccc;
   width: 100%;
   transition: border 0.2s;
+}
+
+input.error {
+  border-color: red;
 }
 
 input:focus, select:focus {
@@ -88,6 +98,17 @@ button#calculate:hover {
   border-left: 5px solid #0078D7;
   border-radius: 8px;
   white-space: pre-line;
+  animation: fadeIn 0.3s ease-in-out;
+  position: relative;
+}
+
+.results:hover::after {
+  content: "📋 Click to copy";
+  position: absolute;
+  bottom: 5px;
+  right: 12px;
+  font-size: 0.8em;
+  color: #666;
 }
 
 footer {
@@ -95,4 +116,9 @@ footer {
   font-size: 0.9em;
   margin-top: 40px;
   color: #888;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
