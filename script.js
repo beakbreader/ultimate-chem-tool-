@@ -120,4 +120,3 @@ document.addEventListener('keydown', (e) => {
 });
 
 updateFields();
-
