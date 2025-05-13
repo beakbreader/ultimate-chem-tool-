@@ -3,47 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🔬 Molar Mass Calculator</title>
+  <title>Molar Mass Calculator</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app-container">
-    <header>
-      <h1>🔬 Molar Mass & Mole ⇄ Gram Calculator</h1>
-      <p>Enter chemical formulas (<code>h2o</code>) or full element names (<code>magnesium</code>).</p>
-    </header>
+  <div class="container">
+    <h1>Molar Mass & Mole ⇄ Gram Calculator</h1>
+    <p>Enter chemical formulas (e.g., H2O) or compound names (e.g., water).</p>
 
-    <section class="form-area">
-      <label for="operation">🧮 What do you want to calculate?</label>
-      <select id="operation">
-        <option value="molarMass">Calculate Molar Mass</option>
-        <option value="gToMol">Grams ➜ Moles</option>
-        <option value="molToG">Moles ➜ Grams</option>
-      </select>
+    <label for="operation">Select Calculation:</label>
+    <select id="operation">
+      <option value="molarMass">Calculate Molar Mass</option>
+      <option value="gToMol">Grams ➜ Moles</option>
+      <option value="molToG">Moles ➜ Grams</option>
+    </select>
 
-      <label for="formula">🔤 Chemical Formula or Element Name:</label>
-      <input type="text" id="formula" placeholder="e.g., h2o, magnesium, CO2" autocomplete="off" />
+    <label for="formula">Chemical Formula or Compound Name:</label>
+    <input type="text" id="formula" placeholder="e.g., H2O, water, CO2" />
 
-      <div class="inputs">
-        <div id="massField">
-          <label for="mass">Mass (g):</label>
-          <input type="number" id="mass" placeholder="e.g., 18.015" step="any" />
-        </div>
+    <div id="massField" class="input-group">
+      <label for="mass">Mass (g):</label>
+      <input type="number" id="mass" placeholder="e.g., 18.015" step="any" />
+    </div>
 
-        <div id="molesField">
-          <label for="moles">Moles (mol):</label>
-          <input type="number" id="moles" placeholder="e.g., 2" step="any" />
-        </div>
-      </div>
+    <div id="molesField" class="input-group">
+      <label for="moles">Moles (mol):</label>
+      <input type="number" id="moles" placeholder="e.g., 2" step="any" />
+    </div>
 
-      <button id="calculate">🚀 Calculate</button>
-    </section>
+    <button id="calculate">Calculate</button>
 
-    <section class="results" id="results"></section>
-
-    <footer>
-      🔧 Built with HTML, CSS, JS · Hosted on <a href="https://github.com" target="_blank">GitHub Pages</a>
-    </footer>
+    <div id="results" class="results"></div>
   </div>
 
   <script src="script.js"></script>
