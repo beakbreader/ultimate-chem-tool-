@@ -15,18 +15,38 @@ const elementNames = {
 
 function normalizeFormula(input) {
   const lower = input.trim().toLowerCase();
-  if (elementNames[lower]) return elementNames[lower]; // Name only
-  return input.replace(/([a-zA-Z]+)(\d*)/g, (match, element, qty) => {
-    if (element.length === 1) {
-      return element.toUpperCase() + (qty || '');
+
+  // Full element name?
+  if (elementNames[lower]) return elementNames[lower];
+
+  // Normalize chemical formula like h2o → H2O
+  let result = '';
+  let i = 0;
+
+  while (i < input.length) {
+    if (/[a-zA-Z]/.test(input[i])) {
+      let element = input[i].toUpperCase();
+      i++;
+
+      if (i < input.length && /[a-z]/.test(input[i])) {
+        element += input[i];
+        i++;
+      }
+
+      result += element;
+    } else {
+      result += input[i];
+      i++;
     }
-    return element[0].toUpperCase() + element.slice(1).toLowerCase() + (qty || '');
-  });
+  }
+
+  return result;
 }
 
 function calculateMolarMass(input) {
   const formula = normalizeFormula(input);
-  let total = 0, i = 0;
+  let total = 0;
+  let i = 0;
   const stack = [];
 
   while (i < formula.length) {
@@ -41,14 +61,21 @@ function calculateMolarMass(input) {
       total = (stack.pop() || 0) + total * parseInt(num || '1');
     } else if (/[A-Z]/.test(formula[i])) {
       let element = formula[i++];
-      if (/[a-z]/.test(formula[i])) element += formula[i++];
+      if (i < formula.length && /[a-z]/.test(formula[i])) {
+        element += formula[i++];
+      }
+
       let qty = '';
-      while (/\d/.test(formula[i])) qty += formula[i++];
+      while (i < formula.length && /\d/.test(formula[i])) {
+        qty += formula[i++];
+      }
       const count = parseInt(qty || '1');
+
       if (!atomicWeights[element]) {
         alert(`❌ Unknown element: ${element}`);
         return null;
       }
+
       total += atomicWeights[element] * count;
     } else {
       i++;
