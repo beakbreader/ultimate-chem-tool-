@@ -13,7 +13,6 @@ const atomicWeights = {
   Tl: 204.38, Pb: 207.2, Bi: 208.98, Th: 232.04, U: 238.03
 };
 
-// FIXED: Turn "h2o" or "hCl" into "H2O" or "HCl"
 function normalizeFormula(formula) {
   let result = '';
   let i = 0;
@@ -22,12 +21,10 @@ function normalizeFormula(formula) {
     if (/[a-zA-Z]/.test(formula[i])) {
       let element = formula[i].toUpperCase();
       i++;
-
       if (i < formula.length && /[a-z]/.test(formula[i])) {
         element += formula[i].toLowerCase();
         i++;
       }
-
       result += element;
     } else {
       result += formula[i];
@@ -56,18 +53,14 @@ function calculateMolarMass(rawFormula) {
       total = (stack.pop() || 0) + total * parseInt(num || '1');
     } else if (/[A-Z]/.test(formula[i])) {
       let element = formula[i++];
-      if (i < formula.length && /[a-z]/.test(formula[i])) {
-        element += formula[i++];
-      }
+      if (/[a-z]/.test(formula[i])) element += formula[i++];
       let qty = '';
       while (/\d/.test(formula[i])) qty += formula[i++];
       let count = parseInt(qty || '1');
-
       if (!atomicWeights[element]) {
         alert(`❌ Unknown element: ${element}`);
         return null;
       }
-
       total += atomicWeights[element] * count;
     } else {
       i++;
@@ -84,14 +77,17 @@ function updateFields() {
 }
 
 function runCalculation() {
-  const formulaInput = document.getElementById('formula').value.trim();
+  const formulaEl = document.getElementById('formula');
+  const formulaInput = formulaEl.value.trim();
   const mass = parseFloat(document.getElementById('mass').value) || 0;
   const moles = parseFloat(document.getElementById('moles').value) || 0;
   const op = document.getElementById('operation').value;
   const results = document.getElementById('results');
 
+  formulaEl.classList.remove('error');
   if (!formulaInput) {
     results.textContent = '⚠️ Please enter a chemical formula.';
+    formulaEl.classList.add('error');
     return;
   }
 
@@ -117,6 +113,12 @@ document.addEventListener('keydown', (e) => {
     e.preventDefault();
     runCalculation();
   }
+});
+document.getElementById('results').addEventListener('click', () => {
+  const text = document.getElementById('results').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    alert("📋 Copied result to clipboard!");
+  });
 });
 
 updateFields();
