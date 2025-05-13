@@ -14,32 +14,25 @@ const atomicWeights = {
 };
 
 function normalizeFormula(formula) {
-  let result = '';
-  let i = 0;
-
+  let result = '', i = 0;
   while (i < formula.length) {
     if (/[a-zA-Z]/.test(formula[i])) {
-      let element = formula[i].toUpperCase();
-      i++;
+      let el = formula[i++].toUpperCase();
       if (i < formula.length && /[a-z]/.test(formula[i])) {
-        element += formula[i].toLowerCase();
-        i++;
+        el += formula[i++].toLowerCase();
       }
-      result += element;
+      result += el;
     } else {
-      result += formula[i];
-      i++;
+      result += formula[i++];
     }
   }
-
   return result;
 }
 
-function calculateMolarMass(rawFormula) {
-  const formula = normalizeFormula(rawFormula);
+function calculateMolarMass(input) {
+  const formula = normalizeFormula(input);
+  let total = 0, i = 0;
   const stack = [];
-  let total = 0;
-  let i = 0;
 
   while (i < formula.length) {
     if (formula[i] === '(') {
@@ -56,7 +49,7 @@ function calculateMolarMass(rawFormula) {
       if (/[a-z]/.test(formula[i])) element += formula[i++];
       let qty = '';
       while (/\d/.test(formula[i])) qty += formula[i++];
-      let count = parseInt(qty || '1');
+      const count = parseInt(qty || '1');
       if (!atomicWeights[element]) {
         alert(`❌ Unknown element: ${element}`);
         return null;
@@ -78,23 +71,22 @@ function updateFields() {
 
 function runCalculation() {
   const formulaEl = document.getElementById('formula');
-  const formulaInput = formulaEl.value.trim();
+  const formula = formulaEl.value.trim();
   const mass = parseFloat(document.getElementById('mass').value) || 0;
   const moles = parseFloat(document.getElementById('moles').value) || 0;
   const op = document.getElementById('operation').value;
   const results = document.getElementById('results');
 
-  formulaEl.classList.remove('error');
-  if (!formulaInput) {
+  if (!formula) {
     results.textContent = '⚠️ Please enter a chemical formula.';
     formulaEl.classList.add('error');
     return;
   }
 
-  const molarMass = calculateMolarMass(formulaInput);
+  const molarMass = calculateMolarMass(formula);
   if (molarMass === null) return;
 
-  const normalized = normalizeFormula(formulaInput);
+  const normalized = normalizeFormula(formula);
   let output = `🧪 Molar Mass of ${normalized} = ${molarMass.toFixed(3)} g/mol\n`;
 
   if (op === 'gToMol') {
@@ -104,21 +96,19 @@ function runCalculation() {
   }
 
   results.textContent = output;
+  formulaEl.classList.remove('error');
 }
 
 document.getElementById('operation').addEventListener('change', updateFields);
 document.getElementById('calculate').addEventListener('click', runCalculation);
-document.addEventListener('keydown', (e) => {
+document.addEventListener('keydown', e => {
   if (e.key === 'Enter') {
     e.preventDefault();
     runCalculation();
   }
 });
 document.getElementById('results').addEventListener('click', () => {
-  const text = document.getElementById('results').textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    alert("📋 Copied result to clipboard!");
-  });
+  navigator.clipboard.writeText(document.getElementById('results').textContent)
+    .then(() => alert("📋 Copied result to clipboard!"));
 });
-
 updateFields();
