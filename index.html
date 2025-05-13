@@ -13,18 +13,33 @@ const atomicWeights = {
   Tl: 204.38, Pb: 207.2, Bi: 208.98, Th: 232.04, U: 238.03
 };
 
-// Proper-case fixer: h2o -> H2O, caco3 -> CaCO3
-function normalizeFormula(input) {
-  return input.replace(/([a-zA-Z]+)(\d*)/g, (match, letters, count) => {
-    if (letters.length === 1) return letters.toUpperCase() + count;
-    return letters[0].toUpperCase() + letters.slice(1).toLowerCase() + count;
-  });
+// Proper-case fixer: works for things like "na2so4" -> "Na2SO4"
+function normalizeFormula(formula) {
+  let result = '';
+  let i = 0;
+  while (i < formula.length) {
+    let ch = formula[i];
+    if (/[a-zA-Z]/.test(ch)) {
+      let element = ch.toUpperCase();
+      i++;
+      if (i < formula.length && /[a-z]/.test(formula[i])) {
+        element += formula[i].toLowerCase();
+        i++;
+      }
+      result += element;
+    } else {
+      result += ch;
+      i++;
+    }
+  }
+  return result;
 }
 
-function calculateMolarMass(formulaRaw) {
-  const formula = normalizeFormula(formulaRaw);
+function calculateMolarMass(rawFormula) {
+  const formula = normalizeFormula(rawFormula);
   const stack = [];
-  let total = 0, i = 0;
+  let total = 0;
+  let i = 0;
 
   while (i < formula.length) {
     if (formula[i] === '(') {
@@ -34,18 +49,22 @@ function calculateMolarMass(formulaRaw) {
     } else if (formula[i] === ')') {
       i++;
       let num = '';
-      while (i < formula.length && /\d/.test(formula[i])) num += formula[i++];
+      while (/\d/.test(formula[i])) num += formula[i++];
       total = (stack.pop() || 0) + total * parseInt(num || '1');
     } else if (/[A-Z]/.test(formula[i])) {
       let element = formula[i++];
-      if (/[a-z]/.test(formula[i])) element += formula[i++];
+      if (i < formula.length && /[a-z]/.test(formula[i])) {
+        element += formula[i++];
+      }
       let qty = '';
       while (/\d/.test(formula[i])) qty += formula[i++];
       let count = parseInt(qty || '1');
+
       if (!atomicWeights[element]) {
         alert(`❌ Unknown element: ${element}`);
         return null;
       }
+
       total += atomicWeights[element] * count;
     } else {
       i++;
@@ -88,11 +107,9 @@ function runCalculation() {
   results.textContent = output;
 }
 
-// Init event listeners
+// Listeners
 document.getElementById('operation').addEventListener('change', updateFields);
 document.getElementById('calculate').addEventListener('click', runCalculation);
-
-// 💥 Trigger on Enter Key!
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Enter') {
     e.preventDefault();
@@ -100,5 +117,4 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-// Initialize field visibility
 updateFields();
